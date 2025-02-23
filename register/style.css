@@ -14,6 +14,24 @@ body {
     border-radius: 5px;
 }
 
+.verification {
+    display: flex;
+    justify-content: space-between;
+    margin: auto;
+    align-items: center;
+    width: 96%;
+}
+
+.verification input {
+    width: 60%;
+}
+
+.verification button {
+    width: 30%;
+    font-size: x-small;
+    border-radius: 3px;
+}
+
 input {
     width: 90%;
     padding: 8px;

@@ -17,3 +17,7 @@ document.getElementById("loginForm").addEventListener("submit", async function (
 document.getElementById("back2register").addEventListener("click", function () {
     window.location.href = "/register"
 })
+
+document.getElementById("forget").addEventListener("click", function() {
+    window.location.href = "/forget"
+})

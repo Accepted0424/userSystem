@@ -117,8 +117,10 @@ func forgetHandle(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	fmt.Println("服务器启动中...")
+	http.Handle("/", http.FileServer(http.Dir("../login")))
 	http.Handle("/register/", http.StripPrefix("/register", http.FileServer(http.Dir("../register"))))
 	http.Handle("/login/", http.StripPrefix("/login", http.FileServer(http.Dir("../login"))))
+	http.Handle("/forget/", http.StripPrefix("/forget", http.FileServer(http.Dir("../forget"))))
 	http.HandleFunc("/registerHandle", registerHandler)
 	http.HandleFunc("/loginHandle", loginHandler)
 	http.HandleFunc("/forgetHandle", forgetHandle)
