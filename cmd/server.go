@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"user/internal/vertify"
 
 	_ "github.com/lib/pq"
 	"golang.org/x/crypto/bcrypt"
@@ -14,6 +15,8 @@ import (
 type User struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
+	Email    string `json:"email"`
+	Code     string `json:"code"`
 }
 
 var db *sql.DB
@@ -48,10 +51,14 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 
+	if user.Code != vertify.VerificationStore[user.Email].Email {
+		json.NewEncoder(w).Encode(map[string]string{"message": ""})
+		return
+	}
+
 	var exists bool
 
 	err = db.QueryRow("SELECT EXISTS(SELECT 1 FROM users WHERE username = $1)", user.Username).Scan(&exists)
-
 	if err != nil {
 		http.Error(w, "检查数据库时出错", http.StatusInternalServerError)
 		return
@@ -68,7 +75,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err = db.Exec("INSERT INTO users (username, password) VALUES ($1, $2)", user.Username, hashedPassword)
+	_, err = db.Exec("INSERT INTO users (username, password, emaild) VALUES ($1, $2, $3)", user.Username, hashedPassword, user.Email)
 	if err != nil {
 		http.Error(w, "注册失败", http.StatusInternalServerError)
 		return
@@ -117,10 +124,11 @@ func forgetHandle(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	fmt.Println("服务器启动中...")
-	http.Handle("/", http.FileServer(http.Dir("../login")))
-	http.Handle("/register/", http.StripPrefix("/register", http.FileServer(http.Dir("../register"))))
-	http.Handle("/login/", http.StripPrefix("/login", http.FileServer(http.Dir("../login"))))
-	http.Handle("/forget/", http.StripPrefix("/forget", http.FileServer(http.Dir("../forget"))))
+	http.Handle("/", http.FileServer(http.Dir("./web/login")))
+	http.Handle("/register/", http.StripPrefix("/register", http.FileServer(http.Dir("./web/register"))))
+	http.Handle("/login/", http.StripPrefix("/login", http.FileServer(http.Dir("./web/login"))))
+	http.Handle("/forget/", http.StripPrefix("/forget", http.FileServer(http.Dir("./web/forget"))))
+	http.HandleFunc("/emailvertify", vertify.InitVerification)
 	http.HandleFunc("/registerHandle", registerHandler)
 	http.HandleFunc("/loginHandle", loginHandler)
 	http.HandleFunc("/forgetHandle", forgetHandle)

@@ -14,7 +14,7 @@ body {
     border-radius: 5px;
 }
 
-.verification {
+#vetification {
     display: flex;
     justify-content: space-between;
     margin: auto;
@@ -22,11 +22,11 @@ body {
     width: 96%;
 }
 
-.verification input {
+#vetification input {
     width: 60%;
 }
 
-.verification button {
+#vetification button {
     width: 30%;
     font-size: x-small;
     border-radius: 3px;

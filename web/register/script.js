@@ -1,3 +1,13 @@
+document.getElementById("send").addEventListener("click", async function name() {
+    const email = document.getElementById("email").value;
+    //发送验证码
+    const response = await fetch("http://localhost:8080/emailvertify", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({email})
+    });
+});
+
 document.getElementById("registerForm").addEventListener("submit", async function (event) {
     event.preventDefault(); 
 
@@ -5,6 +15,7 @@ document.getElementById("registerForm").addEventListener("submit", async functio
     const username = document.getElementById("username").value;
     const password = document.getElementById("password").value;
     const password_repeat = document.getElementById("password_repeat").value;
+    const code = document.getElementById("vertifyCode").value;
     const message = document.getElementById("message")
 
     if (password != password_repeat) {
@@ -16,7 +27,7 @@ document.getElementById("registerForm").addEventListener("submit", async functio
     const response = await fetch("http://localhost:8080/registerHandle", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password })
+        body: JSON.stringify({ username, email, code, password })
     });
 
     const result = await response.json();
