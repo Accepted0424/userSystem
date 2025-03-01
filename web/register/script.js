@@ -1,11 +1,15 @@
 document.getElementById("send").addEventListener("click", async function name() {
     const email = document.getElementById("email").value;
+    const message = document.getElementById("message")
     //发送验证码
     const response = await fetch("http://localhost:8080/emailvertify", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify({email})
     });
+    
+    const result = await response.json();
+    message.innerText = result.message;
 });
 
 document.getElementById("registerForm").addEventListener("submit", async function (event) {

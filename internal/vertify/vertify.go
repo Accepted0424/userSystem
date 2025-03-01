@@ -11,9 +11,8 @@ import (
 )
 
 type Verification struct {
-	Email    string `json: "email"`
-	Code     string `json: "code"`
-	Verified bool   `json: "verified"`
+	Email string `json: "email"`
+	Code  string `json: "code"`
 }
 
 var VerificationStore = make(map[string]Verification) // 用于保存验证码
@@ -34,7 +33,7 @@ func InitVerification(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 
-	fmt.Println("email已发送")
+	json.NewEncoder(w).Encode(map[string]string{"message": "邮件已发送"})
 }
 
 func genCode() string {
@@ -79,11 +78,8 @@ func VerifyCode(email string, userCode string) bool {
 	}
 
 	if verification.Code == userCode {
-		// 验证成功，更新为已验证
-		VerificationStore[email] = Verification{Email: email, Code: userCode, Verified: true}
-		log.Println("邮箱验证成功")
 		return true
 	}
-	log.Println("验证码错误")
+
 	return false
 }
