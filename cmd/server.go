@@ -23,7 +23,7 @@ var db *sql.DB
 
 func init() {
 	var err error
-	connStr := "user=postgres password=l2637962847 dbname=loginandregister sslmode=disable"
+	connStr := "user=mac password=l2637962847 dbname=mac sslmode=disable"
 	db, err = sql.Open("postgres", connStr)
 	if err != nil {
 		log.Fatal("无法打开数据库连接", err)
@@ -51,11 +51,6 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 
-	if user.Code != vertify.VerificationStore[user.Email].Email {
-		json.NewEncoder(w).Encode(map[string]string{"message": ""})
-		return
-	}
-
 	var exists bool
 
 	err = db.QueryRow("SELECT EXISTS(SELECT 1 FROM users WHERE username = $1)", user.Username).Scan(&exists)
@@ -68,6 +63,11 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if !vertify.VerifyCode(user.Email, user.Code) {
+		json.NewEncoder(w).Encode(map[string]string{"message": "验证码错误，请重试"})
+		return
+	}
+
 	// 哈希加密密码
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
@@ -75,7 +75,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err = db.Exec("INSERT INTO users (username, password, emaild) VALUES ($1, $2, $3)", user.Username, hashedPassword, user.Email)
+	_, err = db.Exec("INSERT INTO users (username, password, email) VALUES ($1, $2, $3)", user.Username, hashedPassword, user.Email)
 	if err != nil {
 		http.Error(w, "注册失败", http.StatusInternalServerError)
 		return

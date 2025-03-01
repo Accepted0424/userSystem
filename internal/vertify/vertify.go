@@ -71,7 +71,7 @@ func sendEmail(to string, code string) error {
 }
 
 // 用户输入验证码，进行验证
-func verifyCode(email string, userCode string) bool {
+func VerifyCode(email string, userCode string) bool {
 	verification, exists := VerificationStore[email]
 	if !exists {
 		log.Println("找不到该邮箱的验证信息")

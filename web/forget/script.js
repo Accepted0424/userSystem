@@ -7,7 +7,7 @@ document.getElementById("forgetForm").addEventListener("submit", async function 
     const message = document.getElementById("message");
 
     //验证两次密码是否一致
-    if (new_password != new_password_repeat) {
+    if (new_password !== new_password_repeat) {
         message.innerText = "两次密码输入不一致，请重新输入";
         message.style.color = "red";
         return;
